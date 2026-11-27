@@ -1,0 +1,63 @@
+# ========================================================
+# ZAFANA SNACK - PRODUCTION WEBSERVER CONFIGURATION (.htaccess)
+# Optimal untuk Apache / cPanel / DirectAdmin / VPS Hosting
+# ========================================================
+
+# 1. Dokumen Indeks Utama
+DirectoryIndex index.php index.html
+
+# 2. Nonaktifkan Listing Direktori (Keamanan: Mencegah pengunjung melihat daftar file)
+Options -Indexes
+
+# 3. Tetapkan Karakter Encoding Default UTF-8
+AddDefaultCharset UTF-8
+
+# 4. Lindungi File Sensitif dari Akses Langsung Browser
+<FilesMatch "(?i)\.(sql|env|log|ini|sh|bak|md|git|json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 5. Header Keamanan Web Modern (Jika mod_headers aktif)
+<IfModule mod_headers.c>
+    # Mencegah MIME-sniffing
+    Header set X-Content-Type-Options "nosniff"
+    # Mencegah Clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Proteksi XSS
+    Header set X-XSS-Protection "1; mode=block"
+    # Referrer Policy Aman
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 6. Kompresi GZIP untuk Akselerasi Loading Halaman (Jika mod_deflate aktif)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# 7. Browser Caching untuk File Statis (CSS, JS, Gambar)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
